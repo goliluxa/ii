@@ -369,6 +369,6 @@ def go_ney(ves, inp):
 
 # print(a_bd[0])
 # print(bd[0])
-print(ney4(bd, a_bd, 50000, ves18n9c_2, alpha=0.0000000000000000003))
+print(ney4(bd, a_bd, 50000, ves18n9c_3, alpha=0.0000000000000000003))
 
 

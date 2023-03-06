@@ -43,68 +43,81 @@ def ney4(inp_i, goal_pred_i, lifes, alpha, vesa=list(), neyrons=4):
         weights_.append(np.random.randn(9, 1))
 
     for iteration in range(lifes):
-        for i in range(len(inp_i)):
-            inp = inp_i[i]
-            goal_pred = goal_pred_i[i]
+        try:
+            for i in range(len(inp_i)):
+                inp = inp_i[i]
+                goal_pred = goal_pred_i[i]
 
-            layers = ["", ""]
-            layers.append(np.dot(inp, weights_[1]))
-            for w in range(3, neyrons + 1):
-                layers.append(np.dot(layers[w - 1], weights_[w - 1]))
+                layers = ["", ""]
+                layers.append(np.dot(inp, weights_[1]))
+                for w in range(3, neyrons + 1):
+                    layers.append(np.dot(layers[w - 1], weights_[w - 1]))
 
-            # if dub != 2:
-            #     dub += 1
-            # else:
-            #     print(weights_[1])
-            #     exit()
+                # if dub != 2:
+                #     dub += 1
+                # else:
+                #     print(weights_[1])
+                #     exit()
 
-            pred = np.sum(np.dot(layers[neyrons], weights_[neyrons]))
-            # print(pred)
-            error = (pred - goal_pred) ** 2
-            # print(error)
-            # exit()
-            layers_delta = [pred - goal_pred]
-            for w in range(neyrons - 1):
-                # print(neyrons + 1 - w)
+                pred = np.sum(np.dot(layers[neyrons], weights_[neyrons]))
+                # print(pred)
+                error = (pred - goal_pred) ** 2
+                # print(error)
+                # exit()
+                layers_delta = [pred - goal_pred]
+                for w in range(neyrons - 1):
+                    # print(neyrons + 1 - w)
 
-                layers_delta.append(np.sum(np.dot(layers_delta[w], weights_[neyrons - w])))
+                    layers_delta.append(np.sum(np.dot(layers_delta[w], weights_[neyrons - w])))
 
-            layers_delta.append("")
-            layers_delta.append("")
-            layers_delta = layers_delta[::-1]
+                layers_delta.append("")
+                layers_delta.append("")
+                layers_delta = layers_delta[::-1]
 
-            weights_delta = [""]
-            for w in range(1, neyrons + 1):
-                weights_delta.append(np.zeros(weights_[w].shape))
+                weights_delta = [""]
+                for w in range(1, neyrons + 1):
+                    weights_delta.append(np.zeros(weights_[w].shape))
 
-            # ----------------
-            for k in range(len(weights_delta[1])):
-                for j in range(len(weights_delta[1][k])):
-                    weights_delta[1][k][j] = inp[k] * layers_delta[2]
+                # ----------------
+                for k in range(len(weights_delta[1])):
+                    for j in range(len(weights_delta[1][k])):
+                        weights_delta[1][k][j] = inp[k] * layers_delta[2]
 
-            for w in range(2, neyrons):
-                for k in range(len(weights_delta[w])):
-                    for j in range(len(weights_delta[w][k])):
-                        weights_delta[w][k][j] = np.sum(layers[w].T[j]) * layers_delta[w + 1]
+                for w in range(2, neyrons):
+                    for k in range(len(weights_delta[w])):
+                        for j in range(len(weights_delta[w][k])):
+                            weights_delta[w][k][j] = np.sum(layers[w].T[j]) * layers_delta[w + 1]
 
-            # ----------------
-            for k in range(len(weights_delta[neyrons])):
-                weights_delta[neyrons][k] = np.sum(layers[neyrons].T[k]) * layers_delta[neyrons + 1]
+                # ----------------
+                for k in range(len(weights_delta[neyrons])):
+                    weights_delta[neyrons][k] = np.sum(layers[neyrons].T[k]) * layers_delta[neyrons + 1]
 
-            # ----------------
-            # ----------------
-            for w in range(1, neyrons):
-                for k in range(len(weights_[w])):
-                    for j in range(len(weights_[w])):
-                        weights_[w][k][j] -= weights_delta[w][k][j] * alpha
-            # ----------------
-            for k in range(len(weights_[neyrons])):
-                weights_[neyrons][k] -= weights_delta[neyrons][k] * alpha
-            # ----------------
-            # print(weights_delta[3])
-            # exit()
-        print(iteration, error, sep=(" --- " if error < lerror else " +++ "))
-        lerror = error
+                # ----------------
+                # ----------------
+                for w in range(1, neyrons):
+                    for k in range(len(weights_[w])):
+                        for j in range(len(weights_[w])):
+                            weights_[w][k][j] -= weights_delta[w][k][j] * alpha
+                # ----------------
+                for k in range(len(weights_[neyrons])):
+                    weights_[neyrons][k] -= weights_delta[neyrons][k] * alpha
+                # ----------------
+                # print(weights_delta[3])
+                # exit()
+                if dub % 2 == 0:
+                    l1weights_ = weights_
+                else:
+                    l2weights_ = weights_
+                dub += 1
+        except:
+            print(iteration, error, sep=(" --- " if error < lerror else " +++ "))
+            return weights_
+        if str(error) != "nan":
+            print(iteration, error, sep=(" --- " if error < lerror else " +++ "))
+            lerror = error
+            # lweights_ = weights_
+        else:
+            return l1weights_, l2weights_
     return weights_
 
 
@@ -176,4 +189,4 @@ def go_ney(vesa, inp, neyrons):
     return pred
 
 
-print(ney4(bd, a_bd, lifes=10, alpha=0.0001, neyrons=90, vesa=ves90n9c_0))
+print(ney4(bd, a_bd, lifes=10000, alpha=0.0001, neyrons=90, vesa=ves90n9c_2))
