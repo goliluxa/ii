@@ -5,7 +5,6 @@ from vesa import *
 from numpy import array
 
 
-
 def read_bd():
     with open("bd.txt", "r") as f:
         a = f.read()
@@ -29,194 +28,84 @@ def rod(n, flag=False):
             return n
 
 
-def ney4(inp_i, goal_pred_i, lifes, vesa=list(), alpha=0.00003, neyrons=4):
-    # alpha = 0.00003
+def ney4(inp_i, goal_pred_i, lifes, alpha, vesa=list(), neyrons=4):
+    dub = 0
+    alpha = alpha / (10 ** neyrons)
     lerror = 0
     weights_ = [""]
+    # print(len(vesa), neyrons)
     if len(vesa) == neyrons:
         for i in vesa:
             weights_.append(i)
-        weight_1_2 = vesa[0]
-        weight_2_3 = vesa[1]
-        weight_3_4 = vesa[2]
-        weight_4_5 = vesa[3]
-        weight_5_6 = vesa[4]
-        weight_6_7 = vesa[5]
-        weight_7_8 = vesa[6]
-        weight_8_9 = vesa[7]
-        weight_9_10 = vesa[8]
     else:
         for i in range(neyrons - 1):
             weights_.append(np.random.randn(9, 9))
         weights_.append(np.random.randn(9, 1))
 
-    for iteration in range(n):
+    for iteration in range(lifes):
         for i in range(len(inp_i)):
             inp = inp_i[i]
             goal_pred = goal_pred_i[i]
 
-            layers = ["", "", np.dot(inp, weights_[0])]
-            for i in range(3, neyrons + 3):
-                layers.append(np.dot(layers[i], weights_[i]))
+            layers = ["", ""]
+            layers.append(np.dot(inp, weights_[1]))
+            for w in range(3, neyrons + 1):
+                layers.append(np.dot(layers[w - 1], weights_[w - 1]))
 
-            layer_2 = np.dot(inp, weight_1_2)
-            layer_3 = np.dot(layer_2, weight_2_3)
-            layer_4 = np.dot(layer_3, weight_3_4)
-            layer_5 = np.dot(layer_4, weight_4_5)
-            layer_6 = np.dot(layer_5, weight_5_6)
-            layer_7 = np.dot(layer_6, weight_6_7)
-            layer_8 = np.dot(layer_7, weight_7_8)
-            layer_9 = np.dot(layer_8, weight_8_9)
+            # if dub != 2:
+            #     dub += 1
+            # else:
+            #     print(weights_[1])
+            #     exit()
 
-            pred2 = np.sum(np.dot(layer_9, weight_9_10))
             pred = np.sum(np.dot(layers[neyrons], weights_[neyrons]))
-            print(pred, pred2)
-            print(layers[9], layer_9)
-
-
+            # print(pred)
             error = (pred - goal_pred) ** 2
-
+            # print(error)
+            # exit()
             layers_delta = [pred - goal_pred]
-            for i in range(neyrons - 1):
-                layers_delta.append(np.sum(np.dot(layers_delta[i], weights_[neyrons - i])))
+            for w in range(neyrons - 1):
+                # print(neyrons + 1 - w)
+
+                layers_delta.append(np.sum(np.dot(layers_delta[w], weights_[neyrons - w])))
 
             layers_delta.append("")
             layers_delta.append("")
             layers_delta = layers_delta[::-1]
 
-            layer_10_delta = pred - goal_pred
-            layer_9_delta = np.sum(np.dot(layer_10_delta, weight_9_10))
-            layer_8_delta = np.sum(np.dot(layer_9_delta, weight_8_9))
-            layer_7_delta = np.sum(np.dot(layer_8_delta, weight_7_8))
-            layer_6_delta = np.sum(np.dot(layer_7_delta, weight_6_7))
-            layer_5_delta = np.sum(np.dot(layer_6_delta, weight_5_6))
-            layer_4_delta = np.sum(np.dot(layer_5_delta, weight_4_5))
-            layer_3_delta = np.sum(np.dot(layer_4_delta, weight_3_4))
-            layer_2_delta = np.sum(np.dot(layer_3_delta, weight_2_3))
-
-            print(layers_delta[2], layer_2_delta)
-
             weights_delta = [""]
-            for i in range(1, neyrons + 1):
-                weights_delta.append(np.zeros(weights_[i].shape))
+            for w in range(1, neyrons + 1):
+                weights_delta.append(np.zeros(weights_[w].shape))
 
-            weight_delta_1_2 = np.zeros(weight_1_2.shape)
-            weight_delta_2_3 = np.zeros(weight_2_3.shape)
-            weight_delta_3_4 = np.zeros(weight_3_4.shape)
-            weight_delta_4_5 = np.zeros(weight_4_5.shape)
-            weight_delta_5_6 = np.zeros(weight_5_6.shape)
-            weight_delta_6_7 = np.zeros(weight_6_7.shape)
-            weight_delta_7_8 = np.zeros(weight_7_8.shape)
-            weight_delta_8_9 = np.zeros(weight_8_9.shape)
-            weight_delta_9_10 = np.zeros(weight_9_10.shape)
-
-            print(weights_delta[9], weight_delta_9_10)
             # ----------------
-
             for k in range(len(weights_delta[1])):
                 for j in range(len(weights_delta[1][k])):
                     weights_delta[1][k][j] = inp[k] * layers_delta[2]
 
-            for i in range(2, neyrons + 1):
-                for k in range(len(weights_delta[i])):
-                    for j in range(len(weights_delta[i][k])):
-                        weights_delta[i][k][j] = np.sum(layers[i].T[j]) * layers_delta[i + 1]
-
-
-            for k in range(len(weight_delta_1_2)):
-                for j in range(len(weight_delta_1_2[k])):
-                    weight_delta_1_2[k][j] = inp[k] * layer_2_delta
-
-            for k in range(len(weight_delta_2_3)):
-                for j in range(len(weight_delta_2_3[k])):
-                    weight_delta_2_3[k][j] = np.sum(layer_2.T[j]) * layer_3_delta
-
-            for k in range(len(weight_delta_3_4)):
-                for j in range(len(weight_delta_3_4[k])):
-                    weight_delta_3_4[k][j] = np.sum(layer_3.T[j]) * layer_4_delta
-
-            for k in range(len(weight_delta_4_5)):
-                for j in range(len(weight_delta_4_5[k])):
-                    weight_delta_4_5[k][j] = np.sum(layer_4.T[j]) * layer_5_delta
-
-            for k in range(len(weight_delta_5_6)):
-                for j in range(len(weight_delta_5_6[k])):
-                    weight_delta_5_6[k][j] = np.sum(layer_5.T[j]) * layer_6_delta
-
-            for k in range(len(weight_delta_6_7)):
-                for j in range(len(weight_delta_6_7[k])):
-                    weight_delta_6_7[k][j] = np.sum(layer_6.T[j]) * layer_7_delta
-
-            for k in range(len(weight_delta_7_8)):
-                for j in range(len(weight_delta_7_8[k])):
-                    weight_delta_7_8[k][j] = np.sum(layer_7.T[j]) * layer_8_delta
-
-            for k in range(len(weight_delta_8_9)):
-                for j in range(len(weight_delta_8_9[k])):
-                    weight_delta_8_9[k][j] = np.sum(layer_8.T[j]) * layer_9_delta
+            for w in range(2, neyrons):
+                for k in range(len(weights_delta[w])):
+                    for j in range(len(weights_delta[w][k])):
+                        weights_delta[w][k][j] = np.sum(layers[w].T[j]) * layers_delta[w + 1]
 
             # ----------------
             for k in range(len(weights_delta[neyrons])):
-                weights_delta[neyrons][k] = np.sum(layer_9.T[k]) * layer_10_delta
-
-            for k in range(len(weight_delta_9_10)):
-                weight_delta_9_10[k] = np.sum(layer_9.T[k]) * layer_10_delta
-
-            print(weights_delta[9], weight_delta_9_10)
-            # ----------------
-            # ----------------
-
-            for i in rane(1, neyrons):
-                for k in range(len(weights_[i])):
-                    for j in range(len(weights_[i])):
-                        weights_[i][k][j] -= weights_[i][k][j] * alpha
-
-            for k in range(len(weight_1_2)):
-                for j in range(len(weight_1_2)):
-                    weight_1_2[k][j] -= weight_delta_1_2[k][j] * alpha
-
-            for k in range(len(weight_2_3)):
-                for j in range(len(weight_2_3)):
-                    weight_2_3[k][j] -= weight_delta_2_3[k][j] * alpha
-
-            for k in range(len(weight_3_4)):
-                for j in range(len(weight_3_4)):
-                    weight_3_4[k][j] -= weight_delta_3_4[k][j] * alpha
-
-            for k in range(len(weight_4_5)):
-                for j in range(len(weight_4_5)):
-                    weight_4_5[k][j] -= weight_delta_4_5[k][j] * alpha
-
-            for k in range(len(weight_5_6)):
-                for j in range(len(weight_5_6)):
-                    weight_5_6[k][j] -= weight_delta_5_6[k][j] * alpha
-
-            for k in range(len(weight_6_7)):
-                for j in range(len(weight_6_7)):
-                    weight_6_7[k][j] -= weight_delta_6_7[k][j] * alpha
-
-            for k in range(len(weight_7_8)):
-                for j in range(len(weight_7_8)):
-                    weight_7_8[k][j] -= weight_delta_7_8[k][j] * alpha
-
-            for k in range(len(weight_8_9)):
-                for j in range(len(weight_8_9)):
-                    weight_8_9[k][j] -= weight_delta_8_9[k][j] * alpha
+                weights_delta[neyrons][k] = np.sum(layers[neyrons].T[k]) * layers_delta[neyrons + 1]
 
             # ----------------
-
+            # ----------------
+            for w in range(1, neyrons):
+                for k in range(len(weights_[w])):
+                    for j in range(len(weights_[w])):
+                        weights_[w][k][j] -= weights_delta[w][k][j] * alpha
+            # ----------------
             for k in range(len(weights_[neyrons])):
-                weights_[neyrons][k] -= weights_[neyrons][k] * alpha
-
-            for k in range(len(weight_9_10)):
-                weight_9_10[k] -= weight_delta_9_10[k] * alpha
-
-            print(weights_[9], weight_delta_9_10)
+                weights_[neyrons][k] -= weights_delta[neyrons][k] * alpha
             # ----------------
-            exit()
+            # print(weights_delta[3])
+            # exit()
         print(iteration, error, sep=(" --- " if error < lerror else " +++ "))
         lerror = error
-    return [weight_1_2, weight_2_3, weight_3_4, weight_4_5, weight_5_6, weight_6_7, weight_7_8, weight_8_9, weight_9_10]
+    return weights_
 
 
 s = [[int(i[0]), float(i[1])] for i in read_bd()]
@@ -224,6 +113,7 @@ s.sort()
 # pprint.pprint(s)
 bd = list()
 a_bd = list()
+
 for i in range(0, len(s) // 2 * 2):
     if s[i][0] - s[i - 2][0] == 2 and \
             s[i - 2][0] - s[i - 4][0] == 1 and \
@@ -236,13 +126,32 @@ for i in range(0, len(s) // 2 * 2):
             s[i - 16][0] - s[i - 18][0] == 2:
         a = False
         # print(i, i - 1)
-        num, snum = rod(s[i][1], a), rod([s[i - 2][1], s[i - 4][1], s[i - 6][1], s[i - 8][1], s[i - 10][1], s[i - 12][1], s[i - 14][1], s[i - 16][1], s[i - 18][1]], a)
+        num, snum = rod(s[i][1], a), rod(
+            [s[i - 2][1], s[i - 4][1], s[i - 6][1], s[i - 8][1], s[i - 10][1], s[i - 12][1], s[i - 14][1], s[i - 16][1],
+             s[i - 18][1]], a)
         bd.append(snum)
         a_bd.append(num)
 
 
-def go_ney(ves, inp):
-    weight_1_2, weight_2_3, weight_3_4, weight_4_5, weight_5_6, weight_6_7, weight_7_8, weight_8_9, weight_9_10 = ves[0], ves[1], ves[2], ves[3], ves[4], ves[5], ves[6], ves[7], ves[8]
+def go_ney(vesa, inp, neyrons):
+    weight_1_2, weight_2_3, weight_3_4, weight_4_5, weight_5_6, weight_6_7, weight_7_8, weight_8_9, weight_9_10 = vesa[
+                                                                                                                      0], \
+                                                                                                                  vesa[
+                                                                                                                      1], \
+                                                                                                                  vesa[
+                                                                                                                      2], \
+                                                                                                                  vesa[
+                                                                                                                      3], \
+                                                                                                                  vesa[
+                                                                                                                      4], \
+                                                                                                                  vesa[
+                                                                                                                      5], \
+                                                                                                                  vesa[
+                                                                                                                      6], \
+                                                                                                                  vesa[
+                                                                                                                      7], \
+                                                                                                                  vesa[
+                                                                                                                      8]
 
     weights_ = [""]
     if len(vesa) == neyrons:
@@ -267,5 +176,4 @@ def go_ney(ves, inp):
     return pred
 
 
-
-print(ney4(bd, a_bd, n=1000, vesa=ves9n9c_0, alpha=0.00000000003, neyrons=9))
+print(ney4(bd, a_bd, lifes=10, alpha=0.0001, neyrons=90, vesa=ves90n9c_0))
