@@ -31,6 +31,7 @@ def rod(n, flag=False):
 
 def ney4(inp_i, goal_pred_i, n, vesa=list(), alpha=0.00003):
     # alpha = 0.00003
+    lerror = 0
     if len(vesa) != 0:
         weight_1_2 = vesa[0]
         weight_2_3 = vesa[1]
@@ -179,7 +180,8 @@ def ney4(inp_i, goal_pred_i, n, vesa=list(), alpha=0.00003):
 
             # ----------------
 
-        print(iteration, error, sep=" --- ")
+        print(iteration, error, sep=(" --- " if error < lerror else " +++ "))
+        lerror = error
     return [weight_1_2, weight_2_3, weight_3_4, weight_4_5, weight_5_6, weight_6_7, weight_7_8, weight_8_9, weight_9_10]
 
 
