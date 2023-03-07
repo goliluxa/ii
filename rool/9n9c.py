@@ -253,7 +253,7 @@ def go_ney(ves, inp):
 
 # print(a_bd[0])
 # print(bd[0])
-print(ney4(bd, a_bd, 100000, alpha=0.01, ney=9, vesa=ves9n9c_2))
+print(ney4(bd, a_bd, 100000000, alpha=0.01, ney=9, vesa=ves9n9c_2))
 
 
 # 0.09463996079259564

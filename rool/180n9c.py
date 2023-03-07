@@ -38,10 +38,13 @@ def ney4(inp_i, goal_pred_i, lifes, alpha, vesa=list(), neyrons=4):
         for i in vesa:
             weights_.append(i)
     else:
+        # for i in range(neyrons - 1):
+        #     weights_.append(np.random.randn(9, 9))
+        # weights_.append(np.random.randn(9, 1))
         for i in range(neyrons - 1):
             weights_.append(np.random.randn(9, 9))
         weights_.append(np.random.randn(9, 1))
-
+    # print(weights_)
     for iteration in range(lifes):
         try:
             for i in range(len(inp_i)):
@@ -98,6 +101,7 @@ def ney4(inp_i, goal_pred_i, lifes, alpha, vesa=list(), neyrons=4):
                     for k in range(len(weights_[w])):
                         for j in range(len(weights_[w])):
                             weights_[w][k][j] -= weights_delta[w][k][j] * alpha
+
                 # ----------------
                 for k in range(len(weights_[neyrons])):
                     weights_[neyrons][k] -= weights_delta[neyrons][k] * alpha
@@ -109,7 +113,7 @@ def ney4(inp_i, goal_pred_i, lifes, alpha, vesa=list(), neyrons=4):
                 else:
                     l2weights_ = weights_
                 dub += 1
-        except:
+        except Exception as ex:
             print(iteration, error, sep=(" --- " if error < lerror else " +++ "))
             return weights_
         if str(error) != "nan":
@@ -117,11 +121,11 @@ def ney4(inp_i, goal_pred_i, lifes, alpha, vesa=list(), neyrons=4):
             lerror = error
             # lweights_ = weights_
         else:
+
             if dub % 2 == 0:
                 return l2weights_
             else:
                 return l1weights_
-
     return weights_
 
 
@@ -164,6 +168,20 @@ def go_ney(vesa, inp, neyrons):
     pred = np.sum(np.dot(layers[neyrons], weights_[neyrons]))
     return pred
 
+for i in range(1000):
+    # np.random.seed(i)
+    w = ney4(bd, a_bd, lifes=50, alpha=0.001, neyrons=180)
+    a = str(w).split("[nan],\n       ")[-1]
+    # print(a)
+    if a == "[nan]])]":
+        print(i)
+    else:
+        with open("out_W.txt", "w") as f:
+            f.write(str(w))
+        print(i, "Ok")
+        exit()
 
-print(ney4(bd, a_bd, lifes=1000000, alpha=0.0001, neyrons=90, vesa=ves90n9c_4))
-
+# w = ney4(bd, a_bd, lifes=10000, alpha=0.0001, neyrons=90, vesa=ves90n9c_0_2)
+# with open("out_W.txt", "w") as f:
+#     f.write(str(w))
+# print(w)
