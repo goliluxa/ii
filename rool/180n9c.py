@@ -168,20 +168,20 @@ def go_ney(vesa, inp, neyrons):
     pred = np.sum(np.dot(layers[neyrons], weights_[neyrons]))
     return pred
 
-for i in range(1000):
-    # np.random.seed(i)
-    w = ney4(bd, a_bd, lifes=50, alpha=0.001, neyrons=180)
-    a = str(w).split("[nan],\n       ")[-1]
-    # print(a)
-    if a == "[nan]])]":
-        print(i)
-    else:
-        with open("out_W.txt", "w") as f:
-            f.write(str(w))
-        print(i, "Ok")
-        exit()
+# for i in range(1000):
+#     # np.random.seed(i)
+#     w = ney4(bd, a_bd, lifes=200, alpha=0.001, neyrons=180)
+#     a = str(w).split("[nan],\n       ")[-1]
+#     # print(a)
+#     if a == "[nan]])]":
+#         print(i)
+#     else:
+#         with open("out_W_180.txt", "w") as f:
+#             f.write(str(w))
+#         print(i, "Ok")
+#         exit()
 
-# w = ney4(bd, a_bd, lifes=10000, alpha=0.0001, neyrons=90, vesa=ves90n9c_0_2)
-# with open("out_W.txt", "w") as f:
-#     f.write(str(w))
-# print(w)
+w = ney4(bd, a_bd, lifes=11718, alpha=0.0001, neyrons=180, vesa=ves180n9c_0_4)
+with open("out_W_180.txt", "w") as f:
+    f.write(str(w))
+print(w)

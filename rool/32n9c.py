@@ -165,5 +165,20 @@ def go_ney(vesa, inp, neyrons):
     return pred
 
 
-print(ney4(bd, a_bd, lifes=1000000, alpha=0.0001, neyrons=90, vesa=ves90n9c_4))
+# for i in range(1000000):
+#     # np.random.seed(i)
+#     w = ney4(bd, a_bd, lifes=1000, alpha=3, neyrons=90)
+#     a = str(w).split("[nan],\n       ")[-1]
+#     # print(a)
+#     if a == "[nan]])]":
+#         print(i)
+#     else:
+#         with open("out_W_32.txt", "w") as f:
+#             f.write(str(w))
+#         print(i, "Ok")
+#         exit()
 
+w = ney4(bd, a_bd, lifes=1000000, alpha=0.01, neyrons=90, vesa=ves90n9c_0_5)
+with open("out_W_32.txt", "w") as f:
+    f.write(str(w))
+print(w)
